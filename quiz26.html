@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 2</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 2</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (31-60) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cosa sono gli interventi di riabilitazione per gli anziani?",
+                options: ["Prestazioni di tipo economico per gli anziani che siano invalidi civili", "Prestazioni rese a favore degli anziani alcol-dipendenti", "Prestazioni dirette al recupero funzionale e sociale dei soggetti affetti da minorazioni fisiche, psichiche o sensoriali dipendenti da qualsiasi causa"],
+                correct: "Prestazioni dirette al recupero funzionale e sociale dei soggetti affetti da minorazioni fisiche, psichiche o sensoriali dipendenti da qualsiasi causa",
+                explanation: "Gli interventi di riabilitazione per gli anziani sono attività mirate a migliorare o recuperare le capacità funzionali e sociali compromesse da minorazioni fisiche, psichiche o sensoriali, come previsto dalla normativa italiana (es. Legge 833/1978). Questi interventi possono includere fisioterapia, logopedia, terapia occupazionale o supporto psicologico, adattati alle esigenze individuali. Non si limitano a supporto economico né si rivolgono esclusivamente a casi di dipendenza da alcol. Gli OSS svolgono un ruolo chiave nell’assistenza durante questi interventi, supportando i pazienti nelle attività quotidiane e nella mobilizzazione."
+            },
+            {
+                question: "La musicoterapia:",
+                options: ["Stimola l’aggressività", "Non ha alcuna conseguenza né positiva né negativa", "Contribuisce al miglioramento della capacità residua uditiva"],
+                correct: "Contribuisce al miglioramento della capacità residua uditiva",
+                explanation: "La musicoterapia è una pratica terapeutica che utilizza la musica per migliorare il benessere fisico, emotivo e cognitivo. Negli anziani, può stimolare la capacità uditiva residua, favorire la memoria e ridurre lo stress o l’ansia, come dimostrato da studi clinici. Non stimola l’aggressività né è priva di effetti. Gli OSS possono collaborare in attività di musicoterapia, osservando le reazioni dei pazienti e supportando l’équipe riabilitativa."
+            },
+            {
+                question: "A cosa serve una protesi acustica?",
+                options: ["A codificare i suoni", "A utilizzare meglio i messaggi sonori", "A porre un soggetto nelle migliori condizioni possibili di ascolto"],
+                correct: "A porre un soggetto nelle migliori condizioni possibili di ascolto",
+                explanation: "La protesi acustica è un dispositivo medico che amplifica i suoni per compensare la perdita uditiva, permettendo al paziente di ascoltare in modo più chiaro e naturale. Non codifica i suoni né si limita a migliorare l’uso dei messaggi sonori, ma ottimizza le condizioni di ascolto. Gli OSS devono conoscere il funzionamento delle protesi acustiche per assistere i pazienti anziani con ipoacusia, garantendo che il dispositivo sia posizionato correttamente e segnalando eventuali malfunzionamenti."
+            },
+            {
+                question: "Di che tipo di rieducazione necessitano i sordomuti?",
+                options: ["Prettamente fonetica", "Prettamente tattile", "Audio-fonetica"],
+                correct: "Audio-fonetica",
+                explanation: "I sordomuti, o persone con sordità congenita o acquisita che comporta difficoltà nel linguaggio verbale, necessitano di rieducazione audio-fonetica. Questo approccio combina stimolazione uditiva (per sfruttare eventuali capacità residue) con esercizi di articolazione e lettura labiale. Non si basa esclusivamente su tecniche tattili o fonetiche. Gli OSS possono supportare questi pazienti durante le sessioni riabilitative, favorendo la comunicazione non verbale e l’adattamento sociale."
+            },
+            {
+                question: "Cosa sono i coni e i bastoncelli?",
+                options: ["Cellule nervose pigmentate", "Cellule capaci di percepire i suoni", "Segnali luminosi in grado di essere percepiti dalla retina"],
+                correct: "Segnali luminosi in grado di essere percepiti dalla retina",
+                explanation: "I coni e i bastoncelli sono cellule fotorecettrici della retina, responsabili della percezione della luce. I coni permettono la visione dei colori e funzionano in condizioni di luce intensa, mentre i bastoncelli sono sensibili alla luce scarsa e consentono la visione in penombra. Non sono cellule nervose né percepiscono suoni. Gli OSS devono conoscere queste strutture per comprendere le problematiche visive dei pazienti, come la degenerazione maculare, e fornire assistenza adeguata."
+            },
+            {
+                question: "L’autismo è una psicosi che si presenta prevalentemente:",
+                options: ["Nell’adolescenza", "Nella prima infanzia", "In età adulta"],
+                correct: "Nella prima infanzia",
+                explanation: "L’autismo, o disturbo dello spettro autistico (ASD), è una condizione neurosviluppale che si manifesta tipicamente nella prima infanzia, entro i primi tre anni di vita, con difficoltà nella comunicazione sociale, comportamenti ripetitivi e interessi ristretti. Non è una psicosi, ma un disturbo dello sviluppo. Gli OSS devono essere formati per riconoscere i segni dell’autismo e adattare l’assistenza, utilizzando strategie di comunicazione visiva o strutturata."
+            },
+            {
+                question: "Quali ghiandole sono dotate di dotto escretore?",
+                options: ["La tiroide", "I reni", "Le gonadi"],
+                correct: "I reni",
+                explanation: "Le ghiandole dotate di dotto escretore sono ghiandole esocrine, che rilasciano le loro secrezioni attraverso un condotto. I reni, pur non essendo ghiandole esocrine classiche, producono urina che viene espulsa attraverso gli ureteri (dotti escretori). La tiroide e le gonadi sono ghiandole endocrine, che rilasciano ormoni direttamente nel sangue. Gli OSS devono conoscere la differenza per comprendere le funzioni urinarie e endocrine nei pazienti."
+            },
+            {
+                question: "Di quale disturbo si soffre quando il linguaggio è totalmente assente?",
+                options: ["Mutismo cronico", "Audiomutismo", "Ageusia"],
+                correct: "Audiomutismo",
+                explanation: "L’audiomutismo è la condizione caratterizzata dall’assenza totale di linguaggio verbale, spesso associata a sordità congenita che impedisce lo sviluppo della parola. Il mutismo cronico può essere psicogeno o selettivo, mentre l’ageusia è la perdita del gusto. Gli OSS devono utilizzare strategie di comunicazione alternative (es. linguaggio dei segni) per interagire con pazienti affetti da audiomutismo."
+            },
+            {
+                question: "Come può essere definita la disabilità?",
+                options: ["Una patologia dell’apparato muscolo-scheletrico", "Disabilità è la disfunzione organica che caratterizza il diversabile", "Disabilità significa qualsiasi restrizione o carenza (conseguente a una menomazione) della capacità di svolgere"],
+                correct: "Disabilità significa qualsiasi restrizione o carenza (conseguente a una menomazione) della capacità di svolgere",
+                explanation: "Secondo l’Organizzazione Mondiale della Sanità (OMS) e la normativa italiana (Legge 104/1992), la disabilità è definita come una restrizione o carenza, derivante da una menomazione, nella capacità di svolgere attività quotidiane o sociali. Non è limitata a patologie muscolo-scheletriche né a disfunzioni organiche generiche. Gli OSS devono comprendere questa definizione per fornire un’assistenza personalizzata e promuovere l’inclusione."
+            },
+            {
+                question: "Per i farmaci di automedicazione, è necessaria la ricetta?",
+                options: ["Non esistono farmaci di automedicazione", "Sì, sempre", "No, mai"],
+                correct: "No, mai",
+                explanation: "I farmaci di automedicazione, o OTC (Over The Counter), sono medicinali acquistabili senza prescrizione medica, destinati al trattamento di disturbi lievi e transitori (es. paracetamolo per il dolore). Sono regolati dal Ministero della Salute e non richiedono ricetta. Gli OSS devono conoscere questa distinzione per evitare di somministrare farmaci senza autorizzazione e informare correttamente i pazienti."
+            },
+            {
+                question: "I nervi si dividono in:",
+                options: ["Lombari e motori", "Verticali e orizzontali", "Sensitivi e motori"],
+                correct: "Sensitivi e motori",
+                explanation: "I nervi del sistema nervoso periferico si suddividono in sensitivi (che trasmettono segnali sensoriali al sistema nervoso centrale) e motori (che inviano comandi ai muscoli per il movimento). Alcuni nervi sono misti, con entrambe le funzioni. Non esiste una classificazione in “lombari” o “verticali/orizzontali”. Gli OSS devono conoscere questa distinzione per comprendere i sintomi neurologici dei pazienti, come la perdita di sensibilità o forza."
+            },
+            {
+                question: "Nel sistema nervoso autonomo o vegetativo si distinguono due sistemi:",
+                options: ["Simpatico e vascolare", "Muscolare e vascolare", "Simpatico e parasimpatico"],
+                correct: "Simpatico e parasimpatico",
+                explanation: "Il sistema nervoso autonomo regola funzioni involontarie (es. battito cardiaco, digestione) ed è diviso in sistema simpatico (attiva risposte di “lotta o fuga”) e parasimpatico (promuove il riposo e la digestione). Non include componenti muscolari o vascolari come categorie principali. Gli OSS devono conoscere questi sistemi per monitorare segni vitali e reazioni autonome nei pazienti."
+            },
+            {
+                question: "Lo strato del derma è costituito dal tessuto connettivale compatto e si trova:",
+                options: ["Nello strato più esterno della pelle", "Nello strato intermedio tra epidermide e ipoderma", "Nello strato intermedio tra epidermide e ipoderma"],
+                correct: "Nello strato intermedio tra epidermide e ipoderma",
+                explanation: "Il derma è lo strato intermedio della pelle, situato tra l’epidermide (strato esterno) e l’ipoderma (tessuto sottocutaneo). È composto da tessuto connettivo compatto, contenente fibre collagene, vasi sanguigni e nervi, che conferiscono elasticità e resistenza. Gli OSS devono conoscere la struttura della pelle per prevenire lesioni cutanee, come le piaghe da decubito, e applicare correttamente le medicazioni."
+            },
+            {
+                question: "Quale è la composizione dell’urina in condizioni fisiologiche normali?",
+                options: ["Dal 70% di acqua e per il 30% di zuccheri e sali minerali", "Dal 95% di acqua e per il 5% di zuccheri e particelle ematiche", "Dal 95% di acqua e per il 5% di sostanze corpuscolate"],
+                correct: "Dal 95% di acqua e per il 5% di sostanze corpuscolate",
+                explanation: "In condizioni fisiologiche, l’urina è composta per circa il 95% da acqua e per il 5% da sostanze corpuscolate, come urea, creatinina, elettroliti (sodio, potassio) e piccole quantità di altre sostanze. Non contiene zuccheri né particelle ematiche in condizioni normali. Gli OSS devono monitorare le caratteristiche dell’urina (colore, odore, volume) per segnalare anomalie, come infezioni urinarie."
+            },
+            {
+                question: "Lo strumento di valutazione multidimensionale più utilizzato nelle RSA è:",
+                options: ["V.A.O.R. (Valutazione attività ospite residenza)", "V.A.O.R. (Valutazione autonomia ospite residenziale)", "V.A.O.R. (Valutazione anziano ospite residenza)"],
+                correct: "V.A.O.R. (Valutazione anziano ospite residenza)",
+                explanation: "Il V.A.O.R. (Valutazione Anziano Ospite Residenza) è uno strumento multidimensionale utilizzato nelle Residenze Sanitarie Assistite (RSA) per valutare lo stato funzionale, cognitivo, sociale e sanitario degli anziani ospiti. Permette di pianificare interventi personalizzati. Gli OSS utilizzano i dati del V.A.O.R. per adattare l’assistenza quotidiana, come la mobilizzazione o l’igiene personale."
+            },
+            {
+                question: "Cosa sono le cure palliative?",
+                options: ["Sono cure antinfiammatorie a base di cortisone", "Sono cure termali, eseguite in centri benessere", "Sono approcci terapeutici finalizzati ad alleviare i sintomi di un paziente terminale"],
+                correct: "Sono approcci terapeutici finalizzati ad alleviare i sintomi di un paziente terminale",
+                explanation: "Le cure palliative, secondo l’OMS, sono interventi mirati a migliorare la qualità della vita dei pazienti con malattie terminali, alleviando sintomi fisici (dolore, nausea) e offrendo supporto psicologico e sociale. Non sono cure termali né si limitano a trattamenti antinfiammatori. Gli OSS svolgono un ruolo cruciale nelle cure palliative, fornendo assistenza empatica e monitorando il benessere del paziente."
+            },
+            {
+                question: "Il fegato è la ghiandola più grossa del corpo umano. In quante parti è diviso?",
+                options: ["3 lobi", "2 lobi", "4 lobi"],
+                correct: "4 lobi",
+                explanation: "Il fegato, la più grande ghiandola del corpo umano, è anatomicamente diviso in quattro lobi: destro, sinistro, quadrato e caudato. Questa suddivisione è basata su criteri anatomici e funzionali. Gli OSS devono conoscere la struttura del fegato per comprendere le patologie epatiche (es. cirrosi) e assistere pazienti con complicanze, come l’ascite."
+            },
+            {
+                question: "Quale tra i seguenti sono da considerarsi un rifiuto sanitario a rischio infettivo?",
+                options: ["Farmaci scaduti", "Flaconi di medicinali", "Garze e cerotto contaminate da una piaga da decubito"],
+                correct: "Garze e cerotto contaminate da una piaga da decubito",
+                explanation: "Secondo il DPR 254/2003, i rifiuti sanitari a rischio infettivo includono materiali contaminati da fluidi biologici, come garze e cerotti usati per piaghe da decubito, che devono essere smaltiti in contenitori specifici. Farmaci scaduti e flaconi vuoti sono rifiuti speciali, ma non necessariamente a rischio infettivo. Gli OSS devono gestire correttamente i rifiuti per prevenire infezioni nosocomiali."
+            },
+            {
+                question: "Per quale dei seguenti disinfettanti si devono utilizzare i dispositivi di protezione individuale?",
+                options: ["Ipoclorito di sodio al 10%", "Alcool etilico", "Gluteraldeide a aldeide glutarica"],
+                correct: "Gluteraldeide a aldeide glutarica",
+                explanation: "La gluteraldeide è un disinfettante chimico potente utilizzato per la sterilizzazione di strumenti medici, ma è tossica e irritante per pelle, occhi e vie respiratorie. Richiede DPI come guanti, mascherine e occhiali protettivi. L’ipoclorito di sodio e l’alcool etilico richiedono precauzioni minori. Gli OSS devono seguire le norme di sicurezza (D.Lgs. 81/2008) per proteggersi durante l’uso di questi prodotti."
+            },
+            {
+                question: "Gli accessi allo stomaco sono controllati per mezzo di due valvole. Quali?",
+                options: ["Piloro e valvola mitrale o bicuspide", "Cardias e valvola ileocecale", "Cardias e piloro"],
+                correct: "Cardias e piloro",
+                explanation: "Lo stomaco è delimitato da due valvole: il cardias, uno sfintere che regola l’ingresso del cibo dall’esofago, e il piloro, che controlla il passaggio del chimo nell’intestino tenue. La valvola ileocecale si trova tra ileo e cieco, mentre la valvola mitrale è cardiaca. Gli OSS devono conoscere questa anatomia per assistere pazienti con problemi digestivi o stomie."
+            },
+            {
+                question: "Le ustioni vengono distinte in tre gradi, in rapporto a che cosa?",
+                options: ["Al tempo di contatto", "All’estensione dell’ustione", "Alla profondità dell’ustione"],
+                correct: "Alla profondità dell’ustione",
+                explanation: "Le ustioni sono classificate in tre gradi in base alla profondità del danno tissutale: primo grado (epidermide, arrossamento), secondo grado (derma, vesciche) e terzo grado (tessuti sottocutanei, necrosi). L’estensione e il tempo di contatto influenzano la gravità, ma non la classificazione. Gli OSS devono riconoscere i gradi di ustione per applicare le prime cure e segnalare casi gravi."
+            },
+            {
+                question: "Il piloro è regolato da un muscolo circolare detto sfintere pilorico e si trova:",
+                options: ["Tra il colon e il retto", "Tra l’intestino tenue e il colon ascendente", "Tra lo stomaco e l’intestino tenue"],
+                correct: "Tra lo stomaco e l’intestino tenue",
+                explanation: "Il piloro è lo sfintere muscolare che separa lo stomaco dal duodeno (prima parte dell’intestino tenue), regolando il passaggio del chimo. Non si trova tra colon e retto né tra intestino tenue e colon. Gli OSS devono conoscere questa struttura per comprendere i sintomi di ostruzione pilorica o reflusso nei pazienti."
+            },
+            {
+                question: "Quale tra le seguenti mansioni è propria dell’OSS?",
+                options: ["Attività di rieducazione motoria tipiche del fisioterapista", "Tutte le mansioni che non abbiano contatto diretto con il paziente", "Tutte le mansioni di base rivolte al paziente"],
+                correct: "Tutte le mansioni di base rivolte al paziente",
+                explanation: "L’OSS, secondo l’Accordo Stato-Regioni del 2001, svolge mansioni di base rivolte al paziente, come igiene personale, mobilizzazione, assistenza nell’alimentazione e supporto logistico. Le attività di rieducazione motoria sono di competenza del fisioterapista, e le mansioni senza contatto diretto non rappresentano il ruolo principale dell’OSS. Questa conoscenza è essenziale per operare entro i limiti professionali."
+            },
+            {
+                question: "L’agente patogeno del botulismo produce una tossina che, una volta ingerita, causa un grave stato di malattia. Quali sono i sintomi più frequenti?",
+                options: ["Sintomatologia intestinale: nausea, vomito e diarrea", "Sintomatologia nervosa: disturbi della deglutizione e della fonazione", "Tutte le risposte sono corrette"],
+                correct: "Tutte le risposte sono corrette",
+                explanation: "Il botulismo, causato dalla tossina del *Clostridium botulinum*, provoca sintomi sia neurologici (difficoltà di deglutizione, fonazione, visione doppia, paralisi muscolare) che intestinali (nausea, vomito, diarrea) a seconda della fase e della gravità. La tossina agisce bloccando la trasmissione neuromuscolare. Gli OSS devono riconoscere questi sintomi per segnalarli immediatamente, poiché il botulismo è un’emergenza medica."
+            },
+            {
+                question: "A quale fascia di età corrisponde la terza età o fase della senilità?",
+                options: ["Tra i 50 e i 60 anni", "Dai 70 in su", "Tra i 60 e i 65 anni"],
+                correct: "Dai 70 in su",
+                explanation: "La terza età, o senilità, è generalmente definita come la fascia di età dai 70 anni in su, caratterizzata da un aumento delle fragilità fisiche e cognitive, secondo le convenzioni socio-sanitarie italiane. Le fasce 50-60 e 60-65 anni corrispondono rispettivamente alla maturità e alla prima vecchiaia. Gli OSS devono adattare l’assistenza agli anziani, considerando le loro esigenze specifiche."
+            },
+            {
+                question: "La pediculosi è un’infestazione di pidocchi che può interessare:",
+                options: ["Solo la zona pubica", "Solo i capelli", "I capelli, la zona pubica, tutto il corpo"],
+                correct: "I capelli, la zona pubica, tutto il corpo",
+                explanation: "La pediculosi è un’infestazione parassitaria causata da pidocchi, che può colpire il cuoio capelluto (*Pediculus humanus capitis*), la zona pubica (*Pthirus pubis*) o altre parti del corpo (*Pediculus humanus corporis*). Richiede trattamenti specifici e misure igieniche. Gli OSS devono identificare i segni (prurito, lesioni da grattamento) e applicare protocolli di prevenzione per evitare la diffusione in contesti sanitari."
+            },
+            {
+                question: "A quale categoria di rifiuti appartengono le pellicole e le lastre fotografiche?",
+                options: ["Rifiuti assimilabili agli urbani", "Rifiuti speciali pericolosi", "Rifiuti speciali non pericolosi"],
+                correct: "Rifiuti speciali non pericolosi",
+                explanation: "Le pellicole e le lastre fotografiche, come quelle usate in radiologia, sono classificate come rifiuti speciali non pericolosi, secondo il D.Lgs. 152/2006, a causa dei materiali chimici contenuti (es. argento). Non sono assimilabili agli urbani né pericolosi, a meno che non siano contaminati. Gli OSS devono smaltire correttamente questi rifiuti per rispettare le normative ambientali."
+            },
+            {
+                question: "Quale tra queste ghiandole ha una funzione endocrina?",
+                options: ["Ghiandole lacrimali", "Ghiandole sudoripare", "Ghiandole surrenali"],
+                correct: "Ghiandole surrenali",
+                explanation: "Le ghiandole surrenali sono ghiandole endocrine che secernono ormoni (es. cortisolo, adrenalina) direttamente nel sangue, regolando stress, metabolismo e pressione arteriosa. Le ghiandole lacrimali e sudoripare sono esocrine, poiché rilasciano secrezioni (lacrime, sudore) attraverso dotti. Gli OSS devono conoscere le funzioni endocrine per comprendere le condizioni dei pazienti, come l’insufficienza surrenalica."
+            },
+            {
+                question: "La misurazione della temperatura ascellare con il termometro clinico di vetro a mercurio richiede un tempo di mantenimento in sede dello stesso pari a circa:",
+                options: ["1-2 minuti", "5-7 minuti", "10-15 minuti"],
+                correct: "5-7 minuti",
+                explanation: "La misurazione della temperatura ascellare con un termometro clinico a mercurio richiede circa 5-7 minuti per garantire una lettura accurata, poiché il mercurio si espande lentamente fino a raggiungere l’equilibrio termico. Tempi più brevi possono sottostimare la temperatura. Gli OSS devono seguire questa procedura con precisione e segnalare eventuali anomalie, come iperpiressia, all’infermiere."
+            },
+            {
+                question: "Nella misurazione della temperatura, frequenza cardiaca, frequenza respiratoria, l’OSS è tenuto a indossare i guanti?",
+                options: ["E’ tenuto a indossare i guanti", "Indossa i guanti solo nella misurazione della temperatura", "Non è tenuto a indossare i guanti"],
+                correct: "Non è tenuto a indossare i guanti",
+                explanation: "La misurazione dei parametri vitali (temperatura, frequenza cardiaca, respiratoria) non richiede l’uso di guanti, salvo che non vi sia rischio di contatto con fluidi corporei o lesioni cutanee, secondo le precauzioni standard (Ministero della Salute). L’igiene delle mani è sufficiente. Gli OSS devono comunque mantenere elevati standard igienici per prevenire infezioni."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
